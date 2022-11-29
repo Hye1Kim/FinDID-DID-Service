@@ -1,0 +1,1267 @@
+{
+  "contractName": "DIDStorage",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "name": "nonce",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.6+commit.b259423e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"string\"}],\"name\":\"nonce\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"project:/contracts/DIDStorage.sol\":\"DIDStorage\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/DIDStorage.sol\":{\"keccak256\":\"0xad5f8b9a73ca17b89842ebc4cca9f4c5a2c222128488477306e0099ba9b2a3df\",\"urls\":[\"bzzr://12707a995a4c8c43790369652600112be70e55d58664233b3ead3b29d98dca75\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b50610159806100206000396000f3fe608060405234801561001057600080fd5b506004361061002b5760003560e01c8063fc14e4ee14610030575b600080fd5b6100e96004803603602081101561004657600080fd5b810190808035906020019064010000000081111561006357600080fd5b82018360208201111561007557600080fd5b8035906020019184600183028401116401000000008311171561009757600080fd5b91908080601f016020809104026020016040519081016040528093929190818152602001838380828437600081840152601f19601f8201169050808301925050505050505091929192905050506100ff565b6040518082815260200191505060405180910390f35b600381805160208101820180518482526020830160208501208183528095505050505050600091509050548156fea165627a7a72305820fc30b93d35d59117a2515f56e821b359ab54ab0e1e3b9f292f6a2046c08dd0e40029",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061002b5760003560e01c8063fc14e4ee14610030575b600080fd5b6100e96004803603602081101561004657600080fd5b810190808035906020019064010000000081111561006357600080fd5b82018360208201111561007557600080fd5b8035906020019184600183028401116401000000008311171561009757600080fd5b91908080601f016020809104026020016040519081016040528093929190818152602001838380828437600081840152601f19601f8201169050808301925050505050505091929192905050506100ff565b6040518082815260200191505060405180910390f35b600381805160208101820180518482526020830160208501208183528095505050505050600091509050548156fea165627a7a72305820fc30b93d35d59117a2515f56e821b359ab54ab0e1e3b9f292f6a2046c08dd0e40029",
+  "sourceMap": "35:1672:3:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;35:1672:3;;;;;;;",
+  "deployedSourceMap": "35:1672:3:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;35:1672:3;;;;;;;;;;;;;;;;;;;1010:36;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;1010:36:3;;;;;;;;;;21:11:-1;8;5:28;2:2;;;46:1;43;36:12;2:2;1010:36:3;;35:9:-1;28:4;12:14;8:25;5:40;2:2;;;58:1;55;48:12;2:2;1010:36:3;;;;;;100:9:-1;95:1;81:12;77:20;67:8;63:35;60:50;39:11;25:12;22:29;11:107;8:2;;;131:1;128;121:12;8:2;1010:36:3;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;30:3:-1;22:6;14;1:33;99:1;93:3;85:6;81:16;74:27;137:4;133:9;126:4;121:3;117:14;113:30;106:37;;169:3;161:6;157:16;147:26;;1010:36:3;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;28:7:-1;22:14;169:4;160:7;156:18;147:7;143:32;204:13;198:20;246:8;231:13;224:31;316:4;307:7;303:18;296:4;287:7;283:18;273:49;350:9;335:13;328:32;378:4;366:16;;0:388;;;;1010:36:3;;;;;;;;:::o",
+  "source": "pragma solidity >=0.4.24 <=0.5.6;\n\ncontract DIDStorage{\n\n    // mapping(string => Document[]) documents; //key: 신원인증고유갑, value: 분산id\n    // mapping(string => DIDState) didState;\n    // mapping(string => Service[]) services;\n    // mapping(string => uint) public nonce;\n\n    // enum DIDState {None, Active, Deactivated}\n\n    //     struct PublicKey{\n    //     string id;\n    //     string keyType;\n    //     string pubKeyData;\n    //     bool disable;\n    // }\n\n    // struct Document{\n    //     string[] contexts;  //\"https://www.w3.org/ns/did/v1\" 왜 배열이야 ?\n    //     string id;\n    //     PublicKey[] publicKeys;\n    //     string[] credentials;\n    // }\n\n    // struct Service{\n    //     string id;\n    //     PublicKey[] publicKeys;\n    //     string serviceType; //issuer, verifier\n    //     string endPoint;\n    //     bool disable;\n    // }\n\n\n\n    mapping(string => Document) documents;\n    mapping(string => DIDState) didState;\n    mapping(string => IdType) idType;\n    mapping(string => uint) public nonce;\n    \n    enum DIDState {None, Active, Deactivated}\n    enum IdType { User, Service }\n\n    struct PublicKey{\n        string id;\n        string keyType;\n        string pubKeyData;\n        bool disable;\n    }\n    /*\n    struct Service{\n        string id;\n        string serviceType;\n        string serviceEndPoint;\n        PublicKey[] publickeys;\n        bool disable;\n    }\n    */\n    \n    struct Document{\n        string id;\n        string[] contexts;  //\"https://www.w3.org/ns/did/v1\" 왜 배열이야 ?\n        PublicKey[] publicKeys;\n        string svcType; //svc 인경우\n        string svcEndPoint; //svc 인경우\n        string[] credentials;\n    }\n\n\n}\n",
+  "sourcePath": "/home/pslab154/project/findid-registry-dev/contracts/DIDStorage.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/DIDStorage.sol",
+    "exportedSymbols": {
+      "DIDStorage": [
+        855
+      ]
+    },
+    "id": 856,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 806,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.4",
+          ".24",
+          "<=",
+          "0.5",
+          ".6"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:33:3"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 855,
+        "linearizedBaseContracts": [
+          855
+        ],
+        "name": "DIDStorage",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "id": 810,
+            "name": "documents",
+            "nodeType": "VariableDeclaration",
+            "scope": 855,
+            "src": "887:37:3",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_string_memory_$_t_struct$_Document_$854_storage_$",
+              "typeString": "mapping(string => struct DIDStorage.Document)"
+            },
+            "typeName": {
+              "id": 809,
+              "keyType": {
+                "id": 807,
+                "name": "string",
+                "nodeType": "ElementaryTypeName",
+                "src": "895:6:3",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "887:27:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_string_memory_$_t_struct$_Document_$854_storage_$",
+                "typeString": "mapping(string => struct DIDStorage.Document)"
+              },
+              "valueType": {
+                "contractScope": null,
+                "id": 808,
+                "name": "Document",
+                "nodeType": "UserDefinedTypeName",
+                "referencedDeclaration": 854,
+                "src": "905:8:3",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_Document_$854_storage_ptr",
+                  "typeString": "struct DIDStorage.Document"
+                }
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 814,
+            "name": "didState",
+            "nodeType": "VariableDeclaration",
+            "scope": 855,
+            "src": "930:36:3",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_string_memory_$_t_enum$_DIDState_$826_$",
+              "typeString": "mapping(string => enum DIDStorage.DIDState)"
+            },
+            "typeName": {
+              "id": 813,
+              "keyType": {
+                "id": 811,
+                "name": "string",
+                "nodeType": "ElementaryTypeName",
+                "src": "938:6:3",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "930:27:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_string_memory_$_t_enum$_DIDState_$826_$",
+                "typeString": "mapping(string => enum DIDStorage.DIDState)"
+              },
+              "valueType": {
+                "contractScope": null,
+                "id": 812,
+                "name": "DIDState",
+                "nodeType": "UserDefinedTypeName",
+                "referencedDeclaration": 826,
+                "src": "948:8:3",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_enum$_DIDState_$826",
+                  "typeString": "enum DIDStorage.DIDState"
+                }
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 818,
+            "name": "idType",
+            "nodeType": "VariableDeclaration",
+            "scope": 855,
+            "src": "972:32:3",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_string_memory_$_t_enum$_IdType_$829_$",
+              "typeString": "mapping(string => enum DIDStorage.IdType)"
+            },
+            "typeName": {
+              "id": 817,
+              "keyType": {
+                "id": 815,
+                "name": "string",
+                "nodeType": "ElementaryTypeName",
+                "src": "980:6:3",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "972:25:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_string_memory_$_t_enum$_IdType_$829_$",
+                "typeString": "mapping(string => enum DIDStorage.IdType)"
+              },
+              "valueType": {
+                "contractScope": null,
+                "id": 816,
+                "name": "IdType",
+                "nodeType": "UserDefinedTypeName",
+                "referencedDeclaration": 829,
+                "src": "990:6:3",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_enum$_IdType_$829",
+                  "typeString": "enum DIDStorage.IdType"
+                }
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 822,
+            "name": "nonce",
+            "nodeType": "VariableDeclaration",
+            "scope": 855,
+            "src": "1010:36:3",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_string_memory_$_t_uint256_$",
+              "typeString": "mapping(string => uint256)"
+            },
+            "typeName": {
+              "id": 821,
+              "keyType": {
+                "id": 819,
+                "name": "string",
+                "nodeType": "ElementaryTypeName",
+                "src": "1018:6:3",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "1010:23:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_string_memory_$_t_uint256_$",
+                "typeString": "mapping(string => uint256)"
+              },
+              "valueType": {
+                "id": 820,
+                "name": "uint",
+                "nodeType": "ElementaryTypeName",
+                "src": "1028:4:3",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "canonicalName": "DIDStorage.DIDState",
+            "id": 826,
+            "members": [
+              {
+                "id": 823,
+                "name": "None",
+                "nodeType": "EnumValue",
+                "src": "1072:4:3"
+              },
+              {
+                "id": 824,
+                "name": "Active",
+                "nodeType": "EnumValue",
+                "src": "1078:6:3"
+              },
+              {
+                "id": 825,
+                "name": "Deactivated",
+                "nodeType": "EnumValue",
+                "src": "1086:11:3"
+              }
+            ],
+            "name": "DIDState",
+            "nodeType": "EnumDefinition",
+            "src": "1057:41:3"
+          },
+          {
+            "canonicalName": "DIDStorage.IdType",
+            "id": 829,
+            "members": [
+              {
+                "id": 827,
+                "name": "User",
+                "nodeType": "EnumValue",
+                "src": "1117:4:3"
+              },
+              {
+                "id": 828,
+                "name": "Service",
+                "nodeType": "EnumValue",
+                "src": "1123:7:3"
+              }
+            ],
+            "name": "IdType",
+            "nodeType": "EnumDefinition",
+            "src": "1103:29:3"
+          },
+          {
+            "canonicalName": "DIDStorage.PublicKey",
+            "id": 838,
+            "members": [
+              {
+                "constant": false,
+                "id": 831,
+                "name": "id",
+                "nodeType": "VariableDeclaration",
+                "scope": 838,
+                "src": "1164:9:3",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 830,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1164:6:3",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 833,
+                "name": "keyType",
+                "nodeType": "VariableDeclaration",
+                "scope": 838,
+                "src": "1183:14:3",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 832,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1183:6:3",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 835,
+                "name": "pubKeyData",
+                "nodeType": "VariableDeclaration",
+                "scope": 838,
+                "src": "1207:17:3",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 834,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1207:6:3",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 837,
+                "name": "disable",
+                "nodeType": "VariableDeclaration",
+                "scope": 838,
+                "src": "1234:12:3",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bool",
+                  "typeString": "bool"
+                },
+                "typeName": {
+                  "id": 836,
+                  "name": "bool",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1234:4:3",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              }
+            ],
+            "name": "PublicKey",
+            "nodeType": "StructDefinition",
+            "scope": 855,
+            "src": "1138:115:3",
+            "visibility": "public"
+          },
+          {
+            "canonicalName": "DIDStorage.Document",
+            "id": 854,
+            "members": [
+              {
+                "constant": false,
+                "id": 840,
+                "name": "id",
+                "nodeType": "VariableDeclaration",
+                "scope": 854,
+                "src": "1461:9:3",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 839,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1461:6:3",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 843,
+                "name": "contexts",
+                "nodeType": "VariableDeclaration",
+                "scope": 854,
+                "src": "1480:17:3",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_array$_t_string_storage_$dyn_storage_ptr",
+                  "typeString": "string[]"
+                },
+                "typeName": {
+                  "baseType": {
+                    "id": 841,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1480:6:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "id": 842,
+                  "length": null,
+                  "nodeType": "ArrayTypeName",
+                  "src": "1480:8:3",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_string_storage_$dyn_storage_ptr",
+                    "typeString": "string[]"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 846,
+                "name": "publicKeys",
+                "nodeType": "VariableDeclaration",
+                "scope": 854,
+                "src": "1560:22:3",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_array$_t_struct$_PublicKey_$838_storage_$dyn_storage_ptr",
+                  "typeString": "struct DIDStorage.PublicKey[]"
+                },
+                "typeName": {
+                  "baseType": {
+                    "contractScope": null,
+                    "id": 844,
+                    "name": "PublicKey",
+                    "nodeType": "UserDefinedTypeName",
+                    "referencedDeclaration": 838,
+                    "src": "1560:9:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_PublicKey_$838_storage_ptr",
+                      "typeString": "struct DIDStorage.PublicKey"
+                    }
+                  },
+                  "id": 845,
+                  "length": null,
+                  "nodeType": "ArrayTypeName",
+                  "src": "1560:11:3",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_struct$_PublicKey_$838_storage_$dyn_storage_ptr",
+                    "typeString": "struct DIDStorage.PublicKey[]"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 848,
+                "name": "svcType",
+                "nodeType": "VariableDeclaration",
+                "scope": 854,
+                "src": "1592:14:3",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 847,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1592:6:3",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 850,
+                "name": "svcEndPoint",
+                "nodeType": "VariableDeclaration",
+                "scope": 854,
+                "src": "1632:18:3",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_string_storage_ptr",
+                  "typeString": "string"
+                },
+                "typeName": {
+                  "id": 849,
+                  "name": "string",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1632:6:3",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_storage_ptr",
+                    "typeString": "string"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 853,
+                "name": "credentials",
+                "nodeType": "VariableDeclaration",
+                "scope": 854,
+                "src": "1676:20:3",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_array$_t_string_storage_$dyn_storage_ptr",
+                  "typeString": "string[]"
+                },
+                "typeName": {
+                  "baseType": {
+                    "id": 851,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1676:6:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "id": 852,
+                  "length": null,
+                  "nodeType": "ArrayTypeName",
+                  "src": "1676:8:3",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_string_storage_$dyn_storage_ptr",
+                    "typeString": "string[]"
+                  }
+                },
+                "value": null,
+                "visibility": "internal"
+              }
+            ],
+            "name": "Document",
+            "nodeType": "StructDefinition",
+            "scope": 855,
+            "src": "1436:267:3",
+            "visibility": "public"
+          }
+        ],
+        "scope": 856,
+        "src": "35:1672:3"
+      }
+    ],
+    "src": "0:1708:3"
+  },
+  "legacyAST": {
+    "attributes": {
+      "absolutePath": "project:/contracts/DIDStorage.sol",
+      "exportedSymbols": {
+        "DIDStorage": [
+          855
+        ]
+      }
+    },
+    "children": [
+      {
+        "attributes": {
+          "literals": [
+            "solidity",
+            ">=",
+            "0.4",
+            ".24",
+            "<=",
+            "0.5",
+            ".6"
+          ]
+        },
+        "id": 806,
+        "name": "PragmaDirective",
+        "src": "0:33:3"
+      },
+      {
+        "attributes": {
+          "baseContracts": [
+            null
+          ],
+          "contractDependencies": [
+            null
+          ],
+          "contractKind": "contract",
+          "documentation": null,
+          "fullyImplemented": true,
+          "linearizedBaseContracts": [
+            855
+          ],
+          "name": "DIDStorage",
+          "scope": 856
+        },
+        "children": [
+          {
+            "attributes": {
+              "constant": false,
+              "name": "documents",
+              "scope": 855,
+              "stateVariable": true,
+              "storageLocation": "default",
+              "type": "mapping(string => struct DIDStorage.Document)",
+              "value": null,
+              "visibility": "internal"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "type": "mapping(string => struct DIDStorage.Document)"
+                },
+                "children": [
+                  {
+                    "attributes": {
+                      "name": "string",
+                      "type": "string"
+                    },
+                    "id": 807,
+                    "name": "ElementaryTypeName",
+                    "src": "895:6:3"
+                  },
+                  {
+                    "attributes": {
+                      "contractScope": null,
+                      "name": "Document",
+                      "referencedDeclaration": 854,
+                      "type": "struct DIDStorage.Document"
+                    },
+                    "id": 808,
+                    "name": "UserDefinedTypeName",
+                    "src": "905:8:3"
+                  }
+                ],
+                "id": 809,
+                "name": "Mapping",
+                "src": "887:27:3"
+              }
+            ],
+            "id": 810,
+            "name": "VariableDeclaration",
+            "src": "887:37:3"
+          },
+          {
+            "attributes": {
+              "constant": false,
+              "name": "didState",
+              "scope": 855,
+              "stateVariable": true,
+              "storageLocation": "default",
+              "type": "mapping(string => enum DIDStorage.DIDState)",
+              "value": null,
+              "visibility": "internal"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "type": "mapping(string => enum DIDStorage.DIDState)"
+                },
+                "children": [
+                  {
+                    "attributes": {
+                      "name": "string",
+                      "type": "string"
+                    },
+                    "id": 811,
+                    "name": "ElementaryTypeName",
+                    "src": "938:6:3"
+                  },
+                  {
+                    "attributes": {
+                      "contractScope": null,
+                      "name": "DIDState",
+                      "referencedDeclaration": 826,
+                      "type": "enum DIDStorage.DIDState"
+                    },
+                    "id": 812,
+                    "name": "UserDefinedTypeName",
+                    "src": "948:8:3"
+                  }
+                ],
+                "id": 813,
+                "name": "Mapping",
+                "src": "930:27:3"
+              }
+            ],
+            "id": 814,
+            "name": "VariableDeclaration",
+            "src": "930:36:3"
+          },
+          {
+            "attributes": {
+              "constant": false,
+              "name": "idType",
+              "scope": 855,
+              "stateVariable": true,
+              "storageLocation": "default",
+              "type": "mapping(string => enum DIDStorage.IdType)",
+              "value": null,
+              "visibility": "internal"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "type": "mapping(string => enum DIDStorage.IdType)"
+                },
+                "children": [
+                  {
+                    "attributes": {
+                      "name": "string",
+                      "type": "string"
+                    },
+                    "id": 815,
+                    "name": "ElementaryTypeName",
+                    "src": "980:6:3"
+                  },
+                  {
+                    "attributes": {
+                      "contractScope": null,
+                      "name": "IdType",
+                      "referencedDeclaration": 829,
+                      "type": "enum DIDStorage.IdType"
+                    },
+                    "id": 816,
+                    "name": "UserDefinedTypeName",
+                    "src": "990:6:3"
+                  }
+                ],
+                "id": 817,
+                "name": "Mapping",
+                "src": "972:25:3"
+              }
+            ],
+            "id": 818,
+            "name": "VariableDeclaration",
+            "src": "972:32:3"
+          },
+          {
+            "attributes": {
+              "constant": false,
+              "name": "nonce",
+              "scope": 855,
+              "stateVariable": true,
+              "storageLocation": "default",
+              "type": "mapping(string => uint256)",
+              "value": null,
+              "visibility": "public"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "type": "mapping(string => uint256)"
+                },
+                "children": [
+                  {
+                    "attributes": {
+                      "name": "string",
+                      "type": "string"
+                    },
+                    "id": 819,
+                    "name": "ElementaryTypeName",
+                    "src": "1018:6:3"
+                  },
+                  {
+                    "attributes": {
+                      "name": "uint",
+                      "type": "uint256"
+                    },
+                    "id": 820,
+                    "name": "ElementaryTypeName",
+                    "src": "1028:4:3"
+                  }
+                ],
+                "id": 821,
+                "name": "Mapping",
+                "src": "1010:23:3"
+              }
+            ],
+            "id": 822,
+            "name": "VariableDeclaration",
+            "src": "1010:36:3"
+          },
+          {
+            "attributes": {
+              "canonicalName": "DIDStorage.DIDState",
+              "name": "DIDState"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "name": "None"
+                },
+                "id": 823,
+                "name": "EnumValue",
+                "src": "1072:4:3"
+              },
+              {
+                "attributes": {
+                  "name": "Active"
+                },
+                "id": 824,
+                "name": "EnumValue",
+                "src": "1078:6:3"
+              },
+              {
+                "attributes": {
+                  "name": "Deactivated"
+                },
+                "id": 825,
+                "name": "EnumValue",
+                "src": "1086:11:3"
+              }
+            ],
+            "id": 826,
+            "name": "EnumDefinition",
+            "src": "1057:41:3"
+          },
+          {
+            "attributes": {
+              "canonicalName": "DIDStorage.IdType",
+              "name": "IdType"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "name": "User"
+                },
+                "id": 827,
+                "name": "EnumValue",
+                "src": "1117:4:3"
+              },
+              {
+                "attributes": {
+                  "name": "Service"
+                },
+                "id": 828,
+                "name": "EnumValue",
+                "src": "1123:7:3"
+              }
+            ],
+            "id": 829,
+            "name": "EnumDefinition",
+            "src": "1103:29:3"
+          },
+          {
+            "attributes": {
+              "canonicalName": "DIDStorage.PublicKey",
+              "name": "PublicKey",
+              "scope": 855,
+              "visibility": "public"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "constant": false,
+                  "name": "id",
+                  "scope": 838,
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "type": "string",
+                  "value": null,
+                  "visibility": "internal"
+                },
+                "children": [
+                  {
+                    "attributes": {
+                      "name": "string",
+                      "type": "string"
+                    },
+                    "id": 830,
+                    "name": "ElementaryTypeName",
+                    "src": "1164:6:3"
+                  }
+                ],
+                "id": 831,
+                "name": "VariableDeclaration",
+                "src": "1164:9:3"
+              },
+              {
+                "attributes": {
+                  "constant": false,
+                  "name": "keyType",
+                  "scope": 838,
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "type": "string",
+                  "value": null,
+                  "visibility": "internal"
+                },
+                "children": [
+                  {
+                    "attributes": {
+                      "name": "string",
+                      "type": "string"
+                    },
+                    "id": 832,
+                    "name": "ElementaryTypeName",
+                    "src": "1183:6:3"
+                  }
+                ],
+                "id": 833,
+                "name": "VariableDeclaration",
+                "src": "1183:14:3"
+              },
+              {
+                "attributes": {
+                  "constant": false,
+                  "name": "pubKeyData",
+                  "scope": 838,
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "type": "string",
+                  "value": null,
+                  "visibility": "internal"
+                },
+                "children": [
+                  {
+                    "attributes": {
+                      "name": "string",
+                      "type": "string"
+                    },
+                    "id": 834,
+                    "name": "ElementaryTypeName",
+                    "src": "1207:6:3"
+                  }
+                ],
+                "id": 835,
+                "name": "VariableDeclaration",
+                "src": "1207:17:3"
+              },
+              {
+                "attributes": {
+                  "constant": false,
+                  "name": "disable",
+                  "scope": 838,
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "type": "bool",
+                  "value": null,
+                  "visibility": "internal"
+                },
+                "children": [
+                  {
+                    "attributes": {
+                      "name": "bool",
+                      "type": "bool"
+                    },
+                    "id": 836,
+                    "name": "ElementaryTypeName",
+                    "src": "1234:4:3"
+                  }
+                ],
+                "id": 837,
+                "name": "VariableDeclaration",
+                "src": "1234:12:3"
+              }
+            ],
+            "id": 838,
+            "name": "StructDefinition",
+            "src": "1138:115:3"
+          },
+          {
+            "attributes": {
+              "canonicalName": "DIDStorage.Document",
+              "name": "Document",
+              "scope": 855,
+              "visibility": "public"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "constant": false,
+                  "name": "id",
+                  "scope": 854,
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "type": "string",
+                  "value": null,
+                  "visibility": "internal"
+                },
+                "children": [
+                  {
+                    "attributes": {
+                      "name": "string",
+                      "type": "string"
+                    },
+                    "id": 839,
+                    "name": "ElementaryTypeName",
+                    "src": "1461:6:3"
+                  }
+                ],
+                "id": 840,
+                "name": "VariableDeclaration",
+                "src": "1461:9:3"
+              },
+              {
+                "attributes": {
+                  "constant": false,
+                  "name": "contexts",
+                  "scope": 854,
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "type": "string[]",
+                  "value": null,
+                  "visibility": "internal"
+                },
+                "children": [
+                  {
+                    "attributes": {
+                      "length": null,
+                      "type": "string[]"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "string",
+                          "type": "string"
+                        },
+                        "id": 841,
+                        "name": "ElementaryTypeName",
+                        "src": "1480:6:3"
+                      }
+                    ],
+                    "id": 842,
+                    "name": "ArrayTypeName",
+                    "src": "1480:8:3"
+                  }
+                ],
+                "id": 843,
+                "name": "VariableDeclaration",
+                "src": "1480:17:3"
+              },
+              {
+                "attributes": {
+                  "constant": false,
+                  "name": "publicKeys",
+                  "scope": 854,
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "type": "struct DIDStorage.PublicKey[]",
+                  "value": null,
+                  "visibility": "internal"
+                },
+                "children": [
+                  {
+                    "attributes": {
+                      "length": null,
+                      "type": "struct DIDStorage.PublicKey[]"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "contractScope": null,
+                          "name": "PublicKey",
+                          "referencedDeclaration": 838,
+                          "type": "struct DIDStorage.PublicKey"
+                        },
+                        "id": 844,
+                        "name": "UserDefinedTypeName",
+                        "src": "1560:9:3"
+                      }
+                    ],
+                    "id": 845,
+                    "name": "ArrayTypeName",
+                    "src": "1560:11:3"
+                  }
+                ],
+                "id": 846,
+                "name": "VariableDeclaration",
+                "src": "1560:22:3"
+              },
+              {
+                "attributes": {
+                  "constant": false,
+                  "name": "svcType",
+                  "scope": 854,
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "type": "string",
+                  "value": null,
+                  "visibility": "internal"
+                },
+                "children": [
+                  {
+                    "attributes": {
+                      "name": "string",
+                      "type": "string"
+                    },
+                    "id": 847,
+                    "name": "ElementaryTypeName",
+                    "src": "1592:6:3"
+                  }
+                ],
+                "id": 848,
+                "name": "VariableDeclaration",
+                "src": "1592:14:3"
+              },
+              {
+                "attributes": {
+                  "constant": false,
+                  "name": "svcEndPoint",
+                  "scope": 854,
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "type": "string",
+                  "value": null,
+                  "visibility": "internal"
+                },
+                "children": [
+                  {
+                    "attributes": {
+                      "name": "string",
+                      "type": "string"
+                    },
+                    "id": 849,
+                    "name": "ElementaryTypeName",
+                    "src": "1632:6:3"
+                  }
+                ],
+                "id": 850,
+                "name": "VariableDeclaration",
+                "src": "1632:18:3"
+              },
+              {
+                "attributes": {
+                  "constant": false,
+                  "name": "credentials",
+                  "scope": 854,
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "type": "string[]",
+                  "value": null,
+                  "visibility": "internal"
+                },
+                "children": [
+                  {
+                    "attributes": {
+                      "length": null,
+                      "type": "string[]"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "string",
+                          "type": "string"
+                        },
+                        "id": 851,
+                        "name": "ElementaryTypeName",
+                        "src": "1676:6:3"
+                      }
+                    ],
+                    "id": 852,
+                    "name": "ArrayTypeName",
+                    "src": "1676:8:3"
+                  }
+                ],
+                "id": 853,
+                "name": "VariableDeclaration",
+                "src": "1676:20:3"
+              }
+            ],
+            "id": 854,
+            "name": "StructDefinition",
+            "src": "1436:267:3"
+          }
+        ],
+        "id": 855,
+        "name": "ContractDefinition",
+        "src": "35:1672:3"
+      }
+    ],
+    "id": 856,
+    "name": "SourceUnit",
+    "src": "0:1708:3"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.6+commit.b259423e.Emscripten.clang"
+  },
+  "networks": {
+    "1001": {
+      "events": {},
+      "links": {},
+      "address": "0x58AA9C279007586089831294f77e0f8422Cc703f",
+      "transactionHash": "0x4c15a54e1bf1f1176ecd1e3f60db543b05e29c31e8f436a4b877c32db4cd1c48"
+    }
+  },
+  "schemaVersion": "3.4.10",
+  "updatedAt": "2022-11-09T14:19:24.730Z",
+  "networkType": "ethereum",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}

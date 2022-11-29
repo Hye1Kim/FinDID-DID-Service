@@ -1,0 +1,56 @@
+{
+  "_args": [
+    [
+      "klay-did-auth@1.0.0",
+      "/home/pslab154/br2k-next-auction/br2k.admin-server"
+    ]
+  ],
+  "_from": "klay-did-auth@1.0.0",
+  "_id": "klay-did-auth@1.0.0",
+  "_inBundle": false,
+  "_integrity": "sha512-c1q4436XGcWazjZFZa7TDEfCvYeT4EdoM3w67sNsUDhy1Tyq2IgONYd+roY1WR6NTwgED1QwI/uX8wvd1293TA==",
+  "_location": "/klay-did-auth",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "klay-did-auth@1.0.0",
+    "name": "klay-did-auth",
+    "escapedName": "klay-did-auth",
+    "rawSpec": "1.0.0",
+    "saveSpec": null,
+    "fetchSpec": "1.0.0"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/klay-did-auth/-/klay-did-auth-1.0.0.tgz",
+  "_spec": "1.0.0",
+  "_where": "/home/pslab154/br2k-next-auction/br2k.admin-server",
+  "author": {
+    "name": "kownminho",
+    "email": "alsgh458@gmail.com"
+  },
+  "dependencies": {
+    "atob": "^2.1.2",
+    "body-parser": "^1.20.0",
+    "caver-js": "^1.8.1",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "express": "^4.17.3",
+    "fs": "0.0.1-security",
+    "keccak256": "^1.0.6",
+    "moment": "^2.29.2",
+    "moment-timezone": "^0.5.34",
+    "secp256k1": "^4.0.3",
+    "sha3": "^2.1.3"
+  },
+  "description": "",
+  "license": "ISC",
+  "main": "index.js",
+  "name": "klay-did-auth",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.0.0"
+}
