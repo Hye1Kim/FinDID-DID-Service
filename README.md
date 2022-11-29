@@ -22,11 +22,11 @@ did-server.js : did-service의 메인 서버
 
 1. npm 모듈 설치
 
-'''
+```shell
 npm install  
-'''
+```
 
 2. did-service 서버 실행 
-'''    
+```shell
 node did-server.js 
-'''
+```
