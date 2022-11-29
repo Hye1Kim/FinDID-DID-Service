@@ -21,7 +21,12 @@ did-server.js : did-service의 메인 서버
 ## 실행
 
 1. npm 모듈 설치
-    npm install  
+
+'''
+npm install  
+'''
 
 2. did-service 서버 실행 
-    node did-server.js 
+'''    
+node did-server.js 
+'''
